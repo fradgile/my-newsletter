@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f3d20" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Atlantic & Pacific" />
+  <meta name="description" content="Your personal Saturday morning newsletter" />
+  <title>The Atlantic &amp; Pacific</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green:   #0f3d20;
+      --green2:  #1a5c32;
+      --green3:  #2d6a4f;
+      --gold:    #b8966e;
+      --cream:   #f5f0e8;
+      --ink:     #1a1a1a;
+      --mid:     #444;
+      --light:   #888;
+      --paper:   #fdfaf4;
+      --border:  rgba(26,26,26,0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      background-image:
+        radial-gradient(ellipse at 15% 15%, rgba(15,61,32,.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(184,150,110,.08) 0%, transparent 55%);
+      font-family: 'Source Serif 4', Georgia, serif;
+      color: var(--ink);
+      min-height: 100vh;
+      padding-bottom: env(safe-area-inset-bottom, 24px);
+    }
+
+    /* ── SETUP SCREEN ── */
+    #setup-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .setup-card {
+      background: var(--paper);
+      max-width: 480px;
+      width: 100%;
+      padding: 40px 32px;
+      box-shadow: 0 8px 40px rgba(15,61,32,.15);
+      border-top: 4px solid var(--green);
+    }
+    .setup-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--green);
+      margin-bottom: 4px;
+    }
+    .setup-logo em { font-style: italic; color: var(--gold); }
+    .setup-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 28px;
+    }
+    .setup-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .setup-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      background: var(--cream);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 8px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .setup-input:focus { border-color: var(--green); }
+    .setup-hint {
+      font-size: 12px;
+      color: var(--light);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .setup-hint a { color: var(--green); }
+    .btn-primary {
+      background: var(--green);
+      color: var(--cream);
+      border: none;
+      padding: 14px 32px;
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-style: italic;
+      cursor: pointer;
+      width: 100%;
+      transition: background .2s, transform .15s, box-shadow .2s;
+    }
+    .btn-primary:hover { background: var(--green2); transform: translateY(-1px); box-shadow: 0 4px 18px rgba(15,61,32,.25); }
+    .btn-primary:active { transform: none; }
+    .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; box-shadow: none; }
+    .setup-note {
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--light);
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* ── MAIN APP ── */
+    #app { display: none; }
+
+    /* Masthead */
+    .masthead {
+      background: var(--green);
+      color: var(--cream);
+      text-align: center;
+      padding: 28px 20px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .masthead::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, transparent, transparent 58px, rgba(255,255,255,.025) 58px, rgba(255,255,255,.025) 59px);
+    }
+    .mh-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .mh-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(34px, 8vw, 66px);
+      font-weight: 900;
+      line-height: .93;
+      letter-spacing: -.02em;
+      position: relative;
+    }
+    .mh-title em { font-style: italic; color: var(--gold); }
+    .mh-tagline {
+      font-family: 'Source Serif 4', serif;
+      font-style: italic;
+      font-size: 13px;
+      color: rgba(245,240,232,.55);
+      margin-top: 8px;
+      position: relative;
+    }
+    .mh-flags {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 20px;
+      position: relative;
+    }
+    .mh-divider { width: 1px; height: 14px; background: rgba(245,240,232,.3); }
+
+    /* Date bar */
+    .date-bar {
+      background: var(--ink);
+      color: var(--cream);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 18px;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .date-bar .edition-stamp { color: var(--gold); }
+
+    /* Controls bar */
+    .controls-bar {
+      background: var(--paper);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-gen {
+      background: var(--green);
+      color: var(--cream);
+      border: none;
+      padding: 10px 22px;
+      font-family: 'Playfair Display', serif;
+      font-size: 14px;
+      font-style: italic;
+      cursor: pointer;
+      transition: background .2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .btn-gen:hover:not(:disabled) { background: var(--green2); }
+    .btn-gen:disabled { opacity: .6; cursor: not-allowed; }
+
+    .audio-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+    .btn-audio {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--mid);
+      padding: 8px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .08em;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .btn-audio:hover:not(:disabled) { border-color: var(--green); color: var(--green); }
+    .btn-audio:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-audio.active { background: var(--green); color: var(--cream); border-color: var(--green); }
+
+    .voice-select {
+      border: 1px solid var(--border);
+      background: var(--cream);
+      color: var(--mid);
+      padding: 8px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .05em;
+      cursor: pointer;
+      outline: none;
+      max-width: 160px;
+    }
+
+    .speed-select {
+      border: 1px solid var(--border);
+      background: var(--cream);
+      color: var(--mid);
+      padding: 8px 10px;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .05em;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Key change link */
+    .key-change {
+      margin-left: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--light);
+      cursor: pointer;
+      text-decoration: underline;
+      letter-spacing: .08em;
+      flex-shrink: 0;
+    }
+
+    /* Loading */
+    #loading-state {
+      padding: 48px 24px;
+      text-align: center;
+      display: none;
+    }
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(15,61,32,.15);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--light);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .loading-steps { display: flex; flex-direction: column; gap: 5px; align-items: center; }
+    .loading-step {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: #bbb;
+      letter-spacing: .07em;
+      transition: color .3s;
+    }
+    .loading-step.active { color: var(--green); font-weight: 500; }
+    .loading-step.done { color: var(--gold); }
+
+    /* Audio progress */
+    #audio-progress-bar {
+      height: 2px;
+      background: var(--border);
+      position: relative;
+      display: none;
+    }
+    #audio-progress-fill {
+      height: 100%;
+      background: var(--gold);
+      width: 0%;
+      transition: width .4s linear;
+    }
+    #audio-section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--gold);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 5px 18px;
+      background: rgba(184,150,110,.08);
+      display: none;
+    }
+
+    /* Error */
+    #error-box {
+      margin: 24px 16px;
+      padding: 18px 22px;
+      background: #fff5f5;
+      border-left: 3px solid #c0392b;
+      font-size: 13px;
+      color: #c0392b;
+      display: none;
+    }
+
+    /* Issue content */
+    #issue-content {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+      display: none;
+    }
+
+    .section-block {
+      margin-bottom: 32px;
+      background: var(--paper);
+      border-left: 3px solid var(--green);
+      padding: 20px 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+      animation: fadeUp .45s ease both;
+      scroll-margin-top: 16px;
+    }
+    .section-block:nth-child(2n) { border-color: var(--gold); }
+    .section-block:nth-child(3n) { border-color: var(--green3); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .section-block.reading {
+      border-color: var(--gold) !important;
+      background: rgba(184,150,110,.05);
+      box-shadow: 0 0 0 1px rgba(184,150,110,.3), 0 2px 16px rgba(184,150,110,.1);
+    }
+
+    .sec-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 8.5px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .sec-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      line-height: 1.2;
+    }
+    .sec-icon { font-size: 18px; }
+    .sec-body {
+      font-size: 14.5px;
+      line-height: 1.78;
+      color: #2a2a2a;
+      font-weight: 300;
+    }
+    .sec-body p { margin-bottom: 9px; }
+    .sec-body p:last-child { margin-bottom: 0; }
+    .sec-body strong { font-weight: 600; color: var(--ink); }
+
+    .closing {
+      text-align: center;
+      padding: 24px 16px 40px;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      color: var(--light);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .closing em { font-style: normal; color: var(--gold); }
+
+    /* Saved badge */
+    .saved-badge {
+      display: inline-block;
+      background: var(--green);
+      color: var(--cream);
+      font-family: 'DM Mono', monospace;
+      font-size: 8px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    /* Prompt banner for Android install */
+    #install-banner {
+      background: var(--green);
+      color: var(--cream);
+      padding: 10px 16px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    #install-banner span {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .08em;
+    }
+    #install-banner button {
+      background: var(--gold);
+      border: none;
+      color: var(--ink);
+      padding: 6px 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      cursor: pointer;
+      letter-spacing: .1em;
+      white-space: nowrap;
+    }
+    #install-dismiss {
+      background: transparent !important;
+      color: rgba(245,240,232,.5) !important;
+      padding: 6px !important;
+      font-size: 14px !important;
+    }
+
+    @media (max-width: 480px) {
+      .mh-title { font-size: 38px; }
+      .controls-bar { padding: 10px 12px; gap: 8px; }
+      .btn-gen { padding: 9px 16px; font-size: 13px; }
+      .sec-body { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ SETUP SCREEN ══ -->
+<div id="setup-screen">
+  <div class="setup-card">
+    <div class="setup-logo">The <em>Atlantic</em> &amp; Pacific</div>
+    <div class="setup-sub">Saturday Morning Newsletter · First-time Setup</div>
+
+    <label class="setup-label" for="api-key-input">Your Anthropic API Key</label>
+    <input type="password" id="api-key-input" class="setup-input" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false" />
+    <p class="setup-hint">
+      Get your free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.
+      Your key is stored only in this browser on this device — never sent anywhere except Anthropic's servers.
+    </p>
+
+    <button class="btn-primary" id="save-key-btn" onclick="saveKey()">Save &amp; Open My Newsletter →</button>
+    <p class="setup-note">
+      ☘️ This is your personal newsletter.<br/>
+      No subscription. No account. Just your API key + a Saturday morning.
+    </p>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div id="app">
+
+  <!-- Install banner (Android) -->
+  <div id="install-banner">
+    <span>📱 Add to your home screen for quick Saturday access</span>
+    <button onclick="triggerInstall()">Add to Home Screen</button>
+    <button id="install-dismiss" onclick="dismissInstall()">✕</button>
+  </div>
+
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="mh-eyebrow">Est. 2025 · A Personal Saturday Publication</div>
+    <h1 class="mh-title">The <em>Atlantic</em><br>&amp; Pacific</h1>
+    <p class="mh-tagline">A Saturday morning read for two lives between two shores</p>
+    <div class="mh-flags">
+      <span>🇮🇪</span>
+      <div class="mh-divider"></div>
+      <span>🇺🇸</span>
+    </div>
+  </header>
+
+  <!-- Date bar -->
+  <div class="date-bar">
+    <span id="date-display">Saturday Edition</span>
+    <span class="edition-stamp" id="edition-stamp">Seguin, TX → Youghal, Cork · 2028</span>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls-bar">
+    <button class="btn-gen" id="gen-btn" onclick="generateNewsletter()">Generate This Week's Edition →</button>
+
+    <div class="audio-controls">
+      <button class="btn-audio" id="play-btn" onclick="togglePlay()" disabled title="Play / Pause">▶ Play</button>
+      <button class="btn-audio" id="stop-btn" onclick="stopAudio()" disabled title="Stop">■ Stop</button>
+      <select class="voice-select" id="voice-select" title="Voice">
+        <option value="">Default voice</option>
+      </select>
+      <select class="speed-select" id="speed-select" title="Speed">
+        <option value="0.85">Slow</option>
+        <option value="1" selected>Normal</option>
+        <option value="1.3">Fast</option>
+        <option value="1.6">Very fast</option>
+      </select>
+    </div>
+
+    <span class="key-change" onclick="changeKey()" title="Change API key">🔑 key</span>
+  </div>
+
+  <!-- Audio progress -->
+  <div id="audio-progress-bar"><div id="audio-progress-fill"></div></div>
+  <div id="audio-section-label"></div>
+
+  <!-- Loading -->
+  <div id="loading-state">
+    <div class="spinner"></div>
+    <div class="loading-label">Researching your edition…</div>
+    <div class="loading-steps" id="loading-steps"></div>
+  </div>
+
+  <!-- Error -->
+  <div id="error-box"></div>
+
+  <!-- Issue content -->
+  <div id="issue-content"></div>
+
+  <div class="closing" id="closing" style="display:none">
+    <em>The Atlantic &amp; Pacific</em> · Written fresh each Saturday ·<br/>
+    Seguin, Texas &amp; Youghal, Cork · ☘️
+  </div>
+
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────
+const SECTIONS = [
+  { key:'opener',  icon:'☀️',  label:'Good Morning',        tag:'Opening'              },
+  { key:'ireland', icon:'☘️',  label:'Ireland & Youghal',   tag:'Home'                 },
+  { key:'finance', icon:'📈',  label:'Finance & Markets',   tag:'Money Matters'        },
+  { key:'health',  icon:'🫀',  label:'Health & Wellness',   tag:'Staying Well'         },
+  { key:'science', icon:'🔭',  label:'Science & Tech',      tag:'This Week in Science' },
+  { key:'expat',   icon:'🏡',  label:'Coming Home',         tag:'The Road to Youghal'  },
+  { key:'culture', icon:'🎭',  label:'Culture & Arts',      tag:'Worth Your Time'      },
+  { key:'food',    icon:'🍷',  label:'Food & Drink',        tag:'At the Table'         },
+  { key:'darts',   icon:'🎯',  label:'Darts',               tag:'Sport'                },
+];
+
+const LOADING_STEPS = [
+  'Scanning Youghal & Cork news…',
+  'Checking Irish property & cost of living…',
+  'Looking up Bray, Wicklow & Dublin…',
+  'Scanning markets & USD/EUR rates…',
+  'Browsing health & science…',
+  'Looking up darts results…',
+  'Gathering culture & food…',
+  'Writing your Saturday edition…',
+];
+
+const SYSTEM_PROMPT = `You are the editor of "The Atlantic & Pacific", a warm, witty, beautifully-written Saturday morning newsletter for a couple in their early 50s.
+
+Key facts about your readers:
+- The husband is an Irish citizen (dual US/Irish). This is a HOMECOMING to Ireland in 2028, not emigration.
+- His wife is a US citizen, married to an Irish citizen — she has a clear pathway to Irish residency (Stamp 4) and eventual citizenship.
+- They currently live in Seguin, Texas.
+- They already OWN a mortgage-free home at 47 Gort Aoibhinn, Youghal, County Cork.
+- Wife retires in 2028 when they move. Husband may continue working remotely/part-time for a year or two after.
+- Both love travelling around Ireland and Europe — coastal drives, city breaks, European rail.
+- They spend January and February (~4 weeks) in Venice, Florida each year, where the wife's sister lives.
+- Places of personal interest in Ireland: Youghal (home), East Cork, Bray and County Wicklow, Raheny in Dublin.
+- Ireland–Texas connections, Ireland–Mexico stories, and Gulf Coast Florida content are all welcome.
+
+Tone: conversational, intelligent, brief, warmly impartial. No partisan politics. Think a smart Irish-American friend who reads everything — grounded, a little dry wit.
+
+Return ONLY a valid JSON object with exactly these keys. Each value must be 2–4 short paragraphs of polished prose. NO bullet points, NO markdown, NO HTML tags. Keep each section ~120–180 words. This is a 10-minute Saturday read.
+
+{
+  "opener": "...",
+  "ireland": "...",
+  "finance": "...",
+  "health": "...",
+  "science": "...",
+  "expat": "...",
+  "culture": "...",
+  "food": "...",
+  "darts": "..."
+}
+
+Section guidelines:
+- opener: Warm Saturday greeting with a seasonal reflection. Personal, not newsy. Set the mood.
+- ireland: Youghal and East Cork local colour and news. Bray or Wicklow mentions welcome. Raheny/Dublin if relevant. Irish cost of living, utilities, local services. Any Ireland–Texas, Ireland–Mexico, or Ireland–Florida angle. Irish heritage moment.
+- finance: Key market moves this week. USD/EUR rate is important (they will be converting US savings to euros). Retiree finance angles — pensions, healthcare costs, cost of living in Ireland vs USA. Brief and jargon-free.
+- health: One or two practical health stories relevant to people in their early 50s. Evidence-based. Could include Irish HSE, PRSI entitlements, or GP access tips.
+- science: One fascinating science or tech story. Accessible, curious, not overly technical.
+- expat: "Coming Home" frame — repatriation for an Irish citizen returning after years in the US, what has changed in Ireland. Practical advice for a US citizen spouse's Stamp 4 residency, driving licence conversion, PPS numbers. Comparing Texas/Florida life to Cork. Also include Ireland or Europe travel tip — hidden gem, upcoming festival, road trip from Youghal, European city break from Cork Airport.
+- culture: A book, film, exhibition, music or cultural moment. One Irish angle if possible. Worth the couple's time.
+- food: A recipe idea or food/drink highlight. Seasonal Irish produce, West Cork food scene, Venice FL/Gulf Coast angle in winter months, or Texan–Irish idea. Evocative and practical.
+- darts: Latest PDC darts news — tour results, player spotlights, upcoming majors. Enthusiastic but concise.
+
+Use real current information from your web search. Be specific: names, places, prices, dates. Do not fabricate facts. If you cannot verify something current, write a useful evergreen note for that section instead.`;
+
+// ── STATE ───────────────────────────────────────────────────────
+let currentIssue = null;
+let loadingTimer  = null;
+let stepIndex     = 0;
+let synth         = window.speechSynthesis;
+let utterances    = [];
+let uttIndex      = 0;
+let isSpeaking    = false;
+let deferredPrompt = null;
+
+// ── INIT ────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const key = localStorage.getItem('ap_api_key');
+  if (key) showApp();
+  else showSetup();
+
+  setDateDisplay();
+  loadVoices();
+  synth.addEventListener('voiceschanged', loadVoices);
+
+  // Try to restore last edition
+  const saved = localStorage.getItem('ap_last_issue');
+  if (saved) {
+    try {
+      const obj = JSON.parse(saved);
+      renderIssue(obj.data, obj.date, obj.editionNum, false);
+    } catch(e) {}
+  }
+});
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('install-banner');
+  if (banner && !localStorage.getItem('ap_install_dismissed')) {
+    banner.style.display = 'flex';
+  }
+});
+
+function triggerInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => { deferredPrompt = null; dismissInstall(); });
+  }
+}
+function dismissInstall() {
+  document.getElementById('install-banner').style.display = 'none';
+  localStorage.setItem('ap_install_dismissed', '1');
+}
+
+// ── SETUP / KEY ─────────────────────────────────────────────────
+function showSetup() {
+  document.getElementById('setup-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+function showApp() {
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+function saveKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key.startsWith('sk-ant')) {
+    alert('That doesn\'t look like a valid Anthropic key. It should start with sk-ant-');
+    return;
+  }
+  localStorage.setItem('ap_api_key', key);
+  showApp();
+}
+function changeKey() {
+  if (confirm('Change your API key?')) {
+    localStorage.removeItem('ap_api_key');
+    showSetup();
+  }
+}
+
+// ── DATE ─────────────────────────────────────────────────────────
+function setDateDisplay() {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-IE', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('date-display').textContent = dateStr;
+}
+function editionLabel(num) {
+  return `Edition #${num} · Seguin, TX → Youghal, Cork`;
+}
+
+// ── VOICES ───────────────────────────────────────────────────────
+function loadVoices() {
+  const voices = synth.getVoices();
+  const sel = document.getElementById('voice-select');
+  sel.innerHTML = '<option value="">Default voice</option>';
+  // Prefer English voices, prioritise Irish/UK/US
+  const ranked = voices
+    .filter(v => v.lang.startsWith('en'))
+    .sort((a,b) => {
+      const score = v => v.lang.includes('IE') ? 0 : v.lang.includes('GB') ? 1 : v.lang.includes('AU') ? 2 : 3;
+      return score(a) - score(b);
+    });
+  ranked.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v.name;
+    const flag = v.lang.includes('IE') ? '🇮🇪 ' : v.lang.includes('GB') ? '🇬🇧 ' : v.lang.includes('AU') ? '🇦🇺 ' : '🇺🇸 ';
+    opt.textContent = flag + v.name.replace('Google ', '').replace('Microsoft ', '');
+    sel.appendChild(opt);
+  });
+}
+
+// ── GENERATION ───────────────────────────────────────────────────
+async function generateNewsletter() {
+  const apiKey = localStorage.getItem('ap_api_key');
+  if (!apiKey) { showSetup(); return; }
+
+  stopAudio();
+  setLoading(true);
+  setError('');
+  hideIssue();
+
+  const today = new Date().toLocaleDateString('en-IE', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const editionNum = (parseInt(localStorage.getItem('ap_edition_num') || '0')) + 1;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 3000,
+        system: SYSTEM_PROMPT,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Today is ${today}. Please search the web for the latest news and write this week's edition of The Atlantic & Pacific newsletter. Be specific and current.`
+        }]
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `API error ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text);
+    const fullText = textBlocks.join('\n');
+
+    const parsed = parseJSON(fullText);
+    if (!parsed) throw new Error('Could not parse the newsletter response. Please try again.');
+
+    localStorage.setItem('ap_edition_num', String(editionNum));
+    const saved = { data: parsed, date: today, editionNum };
+    localStorage.setItem('ap_last_issue', JSON.stringify(saved));
+
+    renderIssue(parsed, today, editionNum, true);
+
+  } catch(e) {
+    setError(e.message || 'Something went wrong. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+}
+
+function parseJSON(raw) {
+  try {
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const s = clean.indexOf('{');
+    const e = clean.lastIndexOf('}');
+    if (s === -1 || e === -1) return null;
+    return JSON.parse(clean.slice(s, e + 1));
+  } catch { return null; }
+}
+
+// ── RENDER ───────────────────────────────────────────────────────
+function renderIssue(data, dateStr, num, fresh) {
+  currentIssue = data;
+
+  document.getElementById('edition-stamp').textContent = editionLabel(num);
+
+  const wrap = document.getElementById('issue-content');
+  wrap.innerHTML = '';
+
+  SECTIONS.forEach((sec, i) => {
+    if (!data[sec.key]) return;
+    const block = document.createElement('div');
+    block.className = 'section-block';
+    block.id = 'sec-' + sec.key;
+    block.style.animationDelay = (i * 0.06) + 's';
+    block.innerHTML = `
+      <div class="sec-tag">${sec.tag}</div>
+      <div class="sec-heading"><span class="sec-icon">${sec.icon}</span>${sec.label}</div>
+      <div class="sec-body">${formatBody(data[sec.key])}</div>
+    `;
+    wrap.appendChild(block);
+  });
+
+  if (!fresh) {
+    // Show "last saved" badge
+    const badge = document.createElement('div');
+    badge.style.cssText = 'text-align:center;padding:8px 16px 0;font-family:"DM Mono",monospace;font-size:9px;color:var(--light);letter-spacing:.12em;text-transform:uppercase;';
+    badge.textContent = `↑ Last saved edition · ${dateStr}`;
+    wrap.prepend(badge);
+  }
+
+  wrap.style.display = 'block';
+  document.getElementById('closing').style.display = 'block';
+
+  // Enable audio
+  document.getElementById('play-btn').disabled = false;
+  document.getElementById('stop-btn').disabled = false;
+
+  if (fresh) wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function formatBody(text) {
+  return text.split('\n').filter(p => p.trim()).map(p => `<p>${p}</p>`).join('');
+}
+
+function hideIssue() {
+  document.getElementById('issue-content').style.display = 'none';
+  document.getElementById('closing').style.display = 'none';
+}
+
+// ── LOADING ──────────────────────────────────────────────────────
+function setLoading(on) {
+  const el = document.getElementById('loading-state');
+  const btn = document.getElementById('gen-btn');
+  if (on) {
+    el.style.display = 'block';
+    btn.disabled = true;
+    btn.textContent = 'Researching…';
+    stepIndex = 0;
+    renderSteps();
+    loadingTimer = setInterval(() => {
+      if (stepIndex < LOADING_STEPS.length - 1) { stepIndex++; renderSteps(); }
+    }, 3200);
+  } else {
+    el.style.display = 'none';
+    btn.disabled = false;
+    btn.textContent = 'Generate This Week\'s Edition →';
+    clearInterval(loadingTimer);
+  }
+}
+
+function renderSteps() {
+  const wrap = document.getElementById('loading-steps');
+  wrap.innerHTML = LOADING_STEPS.map((s, i) =>
+    `<div class="loading-step ${i === stepIndex ? 'active' : i < stepIndex ? 'done' : ''}">
+      ${i < stepIndex ? '✓' : i === stepIndex ? '→' : '·'} ${s}
+    </div>`
+  ).join('');
+}
+
+function setError(msg) {
+  const el = document.getElementById('error-box');
+  if (!msg) { el.style.display = 'none'; return; }
+  el.innerHTML = `<strong>Couldn't generate this edition:</strong> ${msg}
+    <br/><br/><button class="btn-primary" onclick="generateNewsletter()" style="width:auto;padding:10px 22px;font-size:13px;">Try Again</button>`;
+  el.style.display = 'block';
+}
+
+// ── AUDIO ────────────────────────────────────────────────────────
+function buildReadingText(data) {
+  // Returns array of {sectionKey, text}
+  return SECTIONS
+    .filter(s => data[s.key])
+    .map(s => ({
+      key: s.key,
+      label: s.label,
+      text: `${s.label}. ${data[s.key].replace(/\n/g, ' ')}`
+    }));
+}
+
+function togglePlay() {
+  if (!currentIssue) return;
+  if (isSpeaking) {
+    if (synth.paused) {
+      synth.resume();
+      document.getElementById('play-btn').textContent = '⏸ Pause';
+      document.getElementById('play-btn').classList.add('active');
+    } else {
+      synth.pause();
+      document.getElementById('play-btn').textContent = '▶ Resume';
+      document.getElementById('play-btn').classList.remove('active');
+    }
+  } else {
+    startAudio();
+  }
+}
+
+function startAudio() {
+  stopAudio();
+  if (!currentIssue) return;
+
+  const segments = buildReadingText(currentIssue);
+  const total = segments.length;
+  const voiceName = document.getElementById('voice-select').value;
+  const rate = parseFloat(document.getElementById('speed-select').value) || 1;
+  const voices = synth.getVoices();
+  const chosenVoice = voices.find(v => v.name === voiceName) || null;
+
+  document.getElementById('audio-progress-bar').style.display = 'block';
+  document.getElementById('audio-section-label').style.display = 'block';
+
+  isSpeaking = true;
+  uttIndex = 0;
+
+  function speak(idx) {
+    if (idx >= total) {
+      finishAudio();
+      return;
+    }
+    const seg = segments[idx];
+    const utt = new SpeechSynthesisUtterance(seg.text);
+    if (chosenVoice) utt.voice = chosenVoice;
+    utt.rate = rate;
+    utt.pitch = 1;
+
+    utt.onstart = () => {
+      uttIndex = idx;
+      document.getElementById('audio-progress-fill').style.width = ((idx / total) * 100) + '%';
+      document.getElementById('audio-section-label').textContent = `Now reading: ${seg.label}`;
+      // Highlight section
+      SECTIONS.forEach(s => {
+        const el = document.getElementById('sec-' + s.key);
+        if (el) el.classList.toggle('reading', s.key === seg.key);
+      });
+      const secEl = document.getElementById('sec-' + seg.key);
+      if (secEl) secEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    utt.onend = () => { if (isSpeaking) speak(idx + 1); };
+    utt.onerror = () => { if (isSpeaking) speak(idx + 1); };
+
+    synth.speak(utt);
+  }
+
+  speak(0);
+  document.getElementById('play-btn').textContent = '⏸ Pause';
+  document.getElementById('play-btn').classList.add('active');
+}
+
+function stopAudio() {
+  synth.cancel();
+  isSpeaking = false;
+  document.getElementById('play-btn').textContent = '▶ Play';
+  document.getElementById('play-btn').classList.remove('active');
+  document.getElementById('audio-progress-bar').style.display = 'none';
+  document.getElementById('audio-section-label').style.display = 'none';
+  document.getElementById('audio-progress-fill').style.width = '0%';
+  document.querySelectorAll('.section-block.reading').forEach(el => el.classList.remove('reading'));
+}
+
+function finishAudio() {
+  isSpeaking = false;
+  document.getElementById('play-btn').textContent = '▶ Play';
+  document.getElementById('play-btn').classList.remove('active');
+  document.getElementById('audio-progress-fill').style.width = '100%';
+  document.getElementById('audio-section-label').textContent = '✓ Finished reading';
+  setTimeout(stopAudio, 2000);
+}
+
+// Handle page visibility (stop audio when app goes to background on Android)
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && isSpeaking) synth.pause();
+  else if (!document.hidden && synth.paused) synth.resume();
+});
+</script>
+
+</body>
+</html>
